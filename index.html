@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trình mở nhiều URL (Có Lịch sử & Giới hạn)</title>
+    <style>
+        /* --- CSS CƠ BẢN & GIAO DIỆN CHÍNH --- */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            display: flex;
+            flex-direction: column; /* Đổi thành column để xếp lịch sử xuống dưới */
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 900px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        /* --- STYLES CŨ (GIỮ NGUYÊN) --- */
+        .info-section { flex: 1; padding-right: 20px; min-width: 300px; }
+        .icon-header { color: #5846f9; font-size: 40px; margin-right: 10px; vertical-align: middle; }
+        h1 { color: #5846f9; font-size: 28px; margin: 0 0 10px 0; line-height: 1.3; }
+        .subtitle { color: #666; font-size: 14px; margin-bottom: 20px; }
+        .features { list-style: none; padding: 0; }
+        .features li { margin-bottom: 15px; font-weight: bold; color: #333; display: flex; align-items: center; }
+        .features li::before { content: "✔"; background-color: #5846f9; color: white; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; justify-content: center; align-items: center; margin-right: 10px; font-size: 12px; }
+        .warning { font-size: 13px; color: #555; margin-top: 20px; background: #fff3cd; padding: 10px; border-radius: 4px; border-left: 4px solid #ffc107; }
+        
+        .input-section { flex: 1; display: flex; flex-direction: column; min-width: 300px; }
+        textarea { width: 100%; height: 200px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; resize: vertical; font-family: monospace; box-sizing: border-box; }
+        
+        .button-group { display: flex; margin-top: -1px; }
+        button { padding: 12px 20px; border: none; cursor: pointer; font-weight: bold; font-size: 14px; text-transform: uppercase; transition: opacity 0.2s; }
+        .btn-open { background-color: #5846f9; color: white; flex: 2; border-bottom-left-radius: 4px; }
+        .btn-clear { background-color: #ccc; color: white; flex: 1; border-bottom-right-radius: 4px; }
+        button:hover { opacity: 0.9; }
+
+        /* --- CSS MỚI CHO PHẦN LỊCH SỬ --- */
+        .history-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f4f6f8;
+            padding-bottom: 10px;
+        }
+
+        .history-header h2 { margin: 0; color: #333; font-size: 18px; }
+        
+        .btn-clear-history {
+            background: none; border: 1px solid #ff4d4d; color: #ff4d4d;
+            border-radius: 4px; padding: 5px 10px; font-size: 12px;
+        }
+        .btn-clear-history:hover { background: #ff4d4d; color: white; }
+
+        .history-list { list-style: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto; }
+        .history-item {
+            background: #f9f9f9;
+            border-left: 4px solid #5846f9;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .history-info { font-size: 14px; color: #555; }
+        .history-time { font-size: 12px; color: #999; display: block; margin-bottom: 4px;}
+        .btn-restore {
+            background-color: #5846f9; color: white;
+            padding: 6px 12px; border-radius: 4px; font-size: 12px; text-transform: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="info-section">
+        <h1><span class="icon-header">🔗</span>Trình mở nhiều URL</h1>
+        <p class="subtitle">Mở Nhiều Liên kết Cùng một lúc và Nâng cao Năng suất</p>
+        <ul class="features">
+            <li>Mở Nhiều Liên kết Cùng một lúc</li>
+            <li>Giới hạn tối đa 50 link/lần để an toàn</li>
+            <li>Tự động lưu lịch sử các link đã mở</li>
+        </ul>
+        <p class="warning">
+            <strong>Lưu ý:</strong> Giới hạn 50 link mỗi lần ấn. Hãy nhớ cho phép trình duyệt mở Pop-up.
+        </p>
+    </div>
+
+    <div class="input-section">
+        <textarea id="urlInput" placeholder="Dán các URL vào đây..."></textarea>
+        <div class="button-group">
+            <button class="btn-open" onclick="openUrls()">Mở Nhiều URL</button>
+            <button class="btn-clear" onclick="clearUrls()">XÓA ×</button>
+        </div>
+    </div>
+</div>
+
+<div class="history-container">
+    <div class="history-header">
+        <h2>🕒 Lịch sử mở link</h2>
+        <button class="btn-clear-history" onclick="deleteAllHistory()">Xóa lịch sử</button>
+    </div>
+    <ul id="historyList" class="history-list">
+        <li style="text-align: center; color: #999; padding: 10px;">Chưa có lịch sử nào.</li>
+    </ul>
+</div>
+
+<script>
+    const MAX_LINKS = 50; // Cấu hình giới hạn link
+
+    // Khi trang tải xong, hiển thị lịch sử từ LocalStorage
+    document.addEventListener('DOMContentLoaded', loadHistory);
+
+    function openUrls() {
+        const text = document.getElementById('urlInput').value;
+        let urls = text.split(/[\n, ]+/).map(u => u.trim()).filter(u => u !== "");
+
+        if (urls.length === 0) {
+            alert("Vui lòng nhập ít nhất một đường dẫn!");
+            return;
+        }
+
+        // --- XỬ LÝ GIỚI HẠN 50 LINK ---
+        let warningMsg = "";
+        if (urls.length > MAX_LINKS) {
+            warningMsg = `Bạn đã nhập ${urls.length} link. Hệ thống chỉ mở ${MAX_LINKS} link đầu tiên để đảm bảo an toàn.`;
+            urls = urls.slice(0, MAX_LINKS); // Cắt lấy 50 link đầu
+            alert(warningMsg);
+        }
+
+        // --- XỬ LÝ MỞ LINK ---
+        let openedCount = 0;
+        urls.forEach(url => {
+            if (!url.match(/^https?:\/\//i)) {
+                url = 'http://' + url;
+            }
+            window.open(url, '_blank');
+            openedCount++;
+        });
+
+        // --- LƯU VÀO LỊCH SỬ ---
+        if (openedCount > 0) {
+            saveToHistory(urls);
+        }
+    }
+
+    function clearUrls() {
+        document.getElementById('urlInput').value = '';
+        document.getElementById('urlInput').focus();
+    }
+
+    // --- CÁC HÀM XỬ LÝ LỊCH SỬ (HISTORY) ---
+
+    function saveToHistory(urlList) {
+        const historyItem = {
+            id: Date.now(),
+            time: new Date().toLocaleString('vi-VN'),
+            count: urlList.length,
+            urls: urlList.join('\n') // Lưu dưới dạng chuỗi để dễ restore
+        };
+
+        // Lấy lịch sử cũ
+        let history = JSON.parse(localStorage.getItem('urlOpenerHistory') || '[]');
+        
+        // Thêm cái mới vào đầu danh sách
+        history.unshift(historyItem);
+
+        // Giới hạn chỉ lưu 20 lần gần nhất để nhẹ bộ nhớ
+        if (history.length > 20) history.pop();
+
+        // Lưu lại vào LocalStorage
+        localStorage.setItem('urlOpenerHistory', JSON.stringify(history));
+        
+        // Vẽ lại giao diện
+        loadHistory();
+    }
+
+    function loadHistory() {
+        const historyListEl = document.getElementById('historyList');
+        const history = JSON.parse(localStorage.getItem('urlOpenerHistory') || '[]');
+
+        if (history.length === 0) {
+            historyListEl.innerHTML = '<li style="text-align: center; color: #999; padding: 10px;">Chưa có lịch sử nào.</li>';
+            return;
+        }
+
+        historyListEl.innerHTML = '';
+        history.forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'history-item';
+            li.innerHTML = `
+                <div class="history-info">
+                    <span class="history-time">${item.time}</span>
+                    <strong>Đã mở ${item.count} liên kết</strong>
+                </div>
+                <button class="btn-restore" onclick="restoreHistory(${item.id})">Dùng lại ↲</button>
+            `;
+            historyListEl.appendChild(li);
+        });
+    }
+
+    function restoreHistory(id) {
+        const history = JSON.parse(localStorage.getItem('urlOpenerHistory') || '[]');
+        const item = history.find(h => h.id === id);
+        if (item) {
+            document.getElementById('urlInput').value = item.urls;
+            // Scroll lên ô nhập liệu
+            document.querySelector('.container').scrollIntoView({behavior: 'smooth'});
+        }
+    }
+
+    function deleteAllHistory() {
+        if(confirm('Bạn có chắc muốn xóa toàn bộ lịch sử không?')) {
+            localStorage.removeItem('urlOpenerHistory');
+            loadHistory();
+        }
+    }
+</script>
+
+</body>
+</html>
