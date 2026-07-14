@@ -41,18 +41,19 @@
 
   .wrap{ width:100%; max-width:960px; }
 
-  /* ---------- Header / Hero comic panel ---------- */
+  /* ---------- Header / Hero comic panel (gọn, ~1/2 kích thước) ---------- */
   .hero{
     position:relative;
     background:var(--sky);
-    border:3px solid var(--ink);
-    border-radius:24px;
-    box-shadow: var(--shadow);
-    padding:28px 26px;
+    border:2.5px solid var(--ink);
+    border-radius:16px;
+    box-shadow: 0 4px 0 rgba(44,42,38,0.9);
+    padding:12px 16px;
     display:flex;
+    align-items:center;
     flex-wrap:wrap;
-    gap:24px;
-    margin-bottom:22px;
+    gap:12px;
+    margin-bottom:16px;
     overflow:hidden;
   }
   .hero::before{
@@ -64,78 +65,82 @@
     pointer-events:none;
   }
 
-  .info-section{ flex:1; min-width:280px; position:relative; z-index:1; }
+  .info-section{ flex:1; min-width:220px; position:relative; z-index:1; }
 
   .badge{
     display:inline-flex;
     align-items:center;
-    gap:6px;
+    gap:5px;
     background:var(--roof);
-    border:2.5px solid var(--ink);
+    border:1.5px solid var(--ink);
     border-radius:999px;
-    padding:4px 12px;
+    padding:2px 9px;
     font-family:'Fredoka', sans-serif;
     font-weight:600;
-    font-size:12px;
-    letter-spacing:.3px;
-    margin-bottom:14px;
-    box-shadow: 3px 3px 0 var(--ink);
+    font-size:10px;
+    letter-spacing:.2px;
+    margin-bottom:6px;
+    box-shadow: 2px 2px 0 var(--ink);
   }
 
   h1{
     font-family:'Fredoka', sans-serif;
     font-weight:700;
-    font-size:32px;
+    font-size:19px;
     line-height:1.2;
-    margin:0 0 8px;
+    margin:0 0 3px;
     color:var(--grass-dark);
-    text-shadow: 2px 2px 0 rgba(255,255,255,0.6);
+    text-shadow: 1.5px 1.5px 0 rgba(255,255,255,0.6);
   }
 
   .subtitle{
     color:var(--gray-dark);
-    font-size:15px;
+    font-size:11.5px;
     font-weight:600;
-    margin:0 0 18px;
+    margin:0 0 8px;
   }
 
-  .features{ list-style:none; padding:0; margin:0 0 16px; }
+  .features{ list-style:none; padding:0; margin:0 0 7px; display:flex; flex-wrap:wrap; gap:6px; }
   .features li{
     display:flex;
     align-items:center;
-    gap:10px;
+    gap:5px;
     font-weight:800;
-    font-size:14px;
+    font-size:10.5px;
     color:var(--ink);
-    margin-bottom:10px;
+    background:rgba(255,255,255,0.6);
+    border:1.5px solid var(--ink);
+    border-radius:999px;
+    padding:3px 9px 3px 3px;
+    margin:0;
   }
   .features li .paw{
     flex:0 0 auto;
-    width:24px; height:24px;
+    width:15px; height:15px;
     background:var(--grass);
-    border:2px solid var(--ink);
+    border:1.5px solid var(--ink);
     border-radius:50%;
     display:flex; align-items:center; justify-content:center;
-    font-size:12px;
+    font-size:8px;
     color:white;
-    box-shadow: 2px 2px 0 var(--ink);
   }
 
   .warning{
-    font-size:13px;
+    font-size:10.5px;
     font-weight:600;
     color:var(--ink);
     background:#fff6da;
-    border:2px dashed var(--roof);
-    padding:10px 12px;
-    border-radius:12px;
+    border:1.5px dashed var(--roof);
+    padding:5px 9px;
+    border-radius:9px;
+    margin:0;
   }
   .warning strong{ color:var(--collar); }
 
   /* Dog mascot */
   .dog-box{
     flex:0 0 auto;
-    width:180px;
+    width:78px;
     display:flex;
     align-items:flex-end;
     justify-content:center;
@@ -144,48 +149,49 @@
   }
   .dog-box svg{ width:100%; height:auto; overflow:visible; }
 
-  /* ---------- Input panel ---------- */
+  /* ---------- Input panel (mở rộng ~gấp đôi) ---------- */
   .panel{
     background:white;
     border:3px solid var(--ink);
-    border-radius:22px;
-    box-shadow: var(--shadow);
-    padding:24px;
+    border-radius:26px;
+    box-shadow: 0 8px 0 rgba(44,42,38,0.9);
+    padding:40px 44px;
     margin-bottom:22px;
   }
 
   .panel-title{
     display:flex;
     align-items:center;
-    gap:8px;
+    gap:10px;
     font-family:'Fredoka', sans-serif;
     font-weight:600;
-    font-size:18px;
+    font-size:26px;
     color:var(--grass-dark);
-    margin:0 0 12px;
+    margin:0 0 18px;
   }
 
   textarea{
     width:100%;
-    height:180px;
-    padding:14px;
-    border:2.5px solid var(--ink);
-    border-radius:14px;
+    height:420px;
+    padding:22px;
+    border:3px solid var(--ink);
+    border-radius:16px;
     resize:vertical;
     font-family:'Nunito', monospace, sans-serif;
-    font-size:14px;
+    font-size:16px;
+    line-height:1.6;
     background:var(--grass-light);
     color:var(--ink);
     outline:none;
     transition:box-shadow .15s ease;
   }
-  textarea:focus{ box-shadow: 0 0 0 3px rgba(63,157,92,0.35); }
+  textarea:focus{ box-shadow: 0 0 0 4px rgba(63,157,92,0.35); }
   textarea::placeholder{ color:#8a9b8e; }
 
   .button-group{
     display:flex;
-    gap:12px;
-    margin-top:14px;
+    gap:16px;
+    margin-top:20px;
     flex-wrap:wrap;
   }
 
@@ -194,17 +200,17 @@
     border:2.5px solid var(--ink);
     cursor:pointer;
     font-weight:600;
-    font-size:14px;
-    padding:12px 20px;
-    border-radius:12px;
-    box-shadow: 3px 3px 0 var(--ink);
+    font-size:17px;
+    padding:16px 26px;
+    border-radius:14px;
+    box-shadow: 4px 4px 0 var(--ink);
     transition: transform .1s ease, box-shadow .1s ease;
   }
-  button:active{ transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+  button:active{ transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--ink); }
 
-  .btn-open{ background:var(--grass); color:white; flex:2; min-width:180px; }
+  .btn-open{ background:var(--grass); color:white; flex:2; min-width:200px; }
   .btn-open:hover{ background:var(--grass-dark); }
-  .btn-clear{ background:white; color:var(--ink); flex:1; min-width:100px; }
+  .btn-clear{ background:white; color:var(--ink); flex:1; min-width:120px; }
   .btn-clear:hover{ background:#f1f1ec; }
 
   /* ---------- History panel ---------- */
@@ -365,11 +371,49 @@
 
 <script>
   const MAX_LINKS = 50; // Cấu hình giới hạn link
+  const HISTORY_KEY = 'urlOpenerHistory';
 
-  // Lưu lịch sử trong bộ nhớ tạm của phiên làm việc (không dùng localStorage)
+  // Lưu lịch sử bền vững, không mất khi tải lại trang:
+  // - Nếu chạy trong artifact của Claude.ai: dùng window.storage (đồng bộ theo tài khoản)
+  // - Nếu mở file này độc lập trong trình duyệt thường: dùng localStorage
   let historyStore = [];
 
-  document.addEventListener('DOMContentLoaded', loadHistory);
+  async function readPersisted() {
+    try {
+      if (window.storage) {
+        const result = await window.storage.get(HISTORY_KEY);
+        return result ? JSON.parse(result.value) : [];
+      }
+    } catch (e) { /* chưa có dữ liệu hoặc lỗi -> coi như rỗng */ }
+
+    try {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  async function writePersisted() {
+    const payload = JSON.stringify(historyStore);
+    try {
+      if (window.storage) {
+        await window.storage.set(HISTORY_KEY, payload);
+        return;
+      }
+    } catch (e) { /* rơi xuống phương án localStorage */ }
+
+    try {
+      localStorage.setItem(HISTORY_KEY, payload);
+    } catch (e) {
+      console.error('Không thể lưu lịch sử:', e);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    historyStore = await readPersisted();
+    renderHistory();
+  });
 
   function openUrls() {
     const text = document.getElementById('urlInput').value;
@@ -409,7 +453,7 @@
 
   // --- CÁC HÀM XỬ LÝ LỊCH SỬ (HISTORY) ---
 
-  function saveToHistory(urlList) {
+  async function saveToHistory(urlList) {
     const historyItem = {
       id: Date.now(),
       time: new Date().toLocaleString('vi-VN'),
@@ -420,10 +464,11 @@
     historyStore.unshift(historyItem);
     if (historyStore.length > 20) historyStore.pop();
 
-    loadHistory();
+    renderHistory();
+    await writePersisted();
   }
 
-  function loadHistory() {
+  function renderHistory() {
     const historyListEl = document.getElementById('historyList');
 
     if (historyStore.length === 0) {
@@ -454,10 +499,11 @@
     }
   }
 
-  function deleteAllHistory() {
+  async function deleteAllHistory() {
     if (confirm('Bạn có chắc muốn xóa toàn bộ lịch sử không?')) {
       historyStore = [];
-      loadHistory();
+      renderHistory();
+      await writePersisted();
     }
   }
 </script>
