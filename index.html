@@ -1,244 +1,465 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trình mở nhiều URL (Có Lịch sử & Giới hạn)</title>
-    <style>
-        /* --- CSS CƠ BẢN & GIAO DIỆN CHÍNH --- */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
-            display: flex;
-            flex-direction: column; /* Đổi thành column để xếp lịch sử xuống dưới */
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trình Mở Nhiều URL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --grass:#3f9d5c;
+    --grass-dark:#2f7d47;
+    --grass-light:#eaf7ee;
+    --cream:#fffdf5;
+    --ink:#2c2a26;
+    --collar:#e8583f;
+    --roof:#ffc94a;
+    --sky:#dff3e6;
+    --gray:#9aa39a;
+    --gray-dark:#6b7268;
+    --radius:18px;
+    --shadow: 0 6px 0 rgba(44,42,38,0.9);
+  }
 
-        .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            display: flex;
-            flex-wrap: wrap;
-            max-width: 900px;
-            width: 100%;
-            margin-bottom: 20px;
-        }
+  *{ box-sizing:border-box; }
 
-        /* --- STYLES CŨ (GIỮ NGUYÊN) --- */
-        .info-section { flex: 1; padding-right: 20px; min-width: 300px; }
-        .icon-header { color: #5846f9; font-size: 40px; margin-right: 10px; vertical-align: middle; }
-        h1 { color: #5846f9; font-size: 28px; margin: 0 0 10px 0; line-height: 1.3; }
-        .subtitle { color: #666; font-size: 14px; margin-bottom: 20px; }
-        .features { list-style: none; padding: 0; }
-        .features li { margin-bottom: 15px; font-weight: bold; color: #333; display: flex; align-items: center; }
-        .features li::before { content: "✔"; background-color: #5846f9; color: white; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; justify-content: center; align-items: center; margin-right: 10px; font-size: 12px; }
-        .warning { font-size: 13px; color: #555; margin-top: 20px; background: #fff3cd; padding: 10px; border-radius: 4px; border-left: 4px solid #ffc107; }
-        
-        .input-section { flex: 1; display: flex; flex-direction: column; min-width: 300px; }
-        textarea { width: 100%; height: 200px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; resize: vertical; font-family: monospace; box-sizing: border-box; }
-        
-        .button-group { display: flex; margin-top: -1px; }
-        button { padding: 12px 20px; border: none; cursor: pointer; font-weight: bold; font-size: 14px; text-transform: uppercase; transition: opacity 0.2s; }
-        .btn-open { background-color: #5846f9; color: white; flex: 2; border-bottom-left-radius: 4px; }
-        .btn-clear { background-color: #ccc; color: white; flex: 1; border-bottom-right-radius: 4px; }
-        button:hover { opacity: 0.9; }
+  body{
+    margin:0;
+    padding:28px 16px 60px;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 8px 8px, rgba(63,157,92,0.10) 2px, transparent 2.2px) 0 0/26px 26px,
+      var(--cream);
+    font-family:'Nunito', sans-serif;
+    color:var(--ink);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
 
-        /* --- CSS MỚI CHO PHẦN LỊCH SỬ --- */
-        .history-container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            max-width: 900px;
-            width: 100%;
-        }
+  .wrap{ width:100%; max-width:960px; }
 
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #f4f6f8;
-            padding-bottom: 10px;
-        }
+  /* ---------- Header / Hero comic panel ---------- */
+  .hero{
+    position:relative;
+    background:var(--sky);
+    border:3px solid var(--ink);
+    border-radius:24px;
+    box-shadow: var(--shadow);
+    padding:28px 26px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:24px;
+    margin-bottom:22px;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image: radial-gradient(rgba(255,255,255,0.55) 1.6px, transparent 1.8px);
+    background-size:16px 16px;
+    opacity:0.5;
+    pointer-events:none;
+  }
 
-        .history-header h2 { margin: 0; color: #333; font-size: 18px; }
-        
-        .btn-clear-history {
-            background: none; border: 1px solid #ff4d4d; color: #ff4d4d;
-            border-radius: 4px; padding: 5px 10px; font-size: 12px;
-        }
-        .btn-clear-history:hover { background: #ff4d4d; color: white; }
+  .info-section{ flex:1; min-width:280px; position:relative; z-index:1; }
 
-        .history-list { list-style: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto; }
-        .history-item {
-            background: #f9f9f9;
-            border-left: 4px solid #5846f9;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .history-info { font-size: 14px; color: #555; }
-        .history-time { font-size: 12px; color: #999; display: block; margin-bottom: 4px;}
-        .btn-restore {
-            background-color: #5846f9; color: white;
-            padding: 6px 12px; border-radius: 4px; font-size: 12px; text-transform: none;
-        }
-    </style>
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:var(--roof);
+    border:2.5px solid var(--ink);
+    border-radius:999px;
+    padding:4px 12px;
+    font-family:'Fredoka', sans-serif;
+    font-weight:600;
+    font-size:12px;
+    letter-spacing:.3px;
+    margin-bottom:14px;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+
+  h1{
+    font-family:'Fredoka', sans-serif;
+    font-weight:700;
+    font-size:32px;
+    line-height:1.2;
+    margin:0 0 8px;
+    color:var(--grass-dark);
+    text-shadow: 2px 2px 0 rgba(255,255,255,0.6);
+  }
+
+  .subtitle{
+    color:var(--gray-dark);
+    font-size:15px;
+    font-weight:600;
+    margin:0 0 18px;
+  }
+
+  .features{ list-style:none; padding:0; margin:0 0 16px; }
+  .features li{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:800;
+    font-size:14px;
+    color:var(--ink);
+    margin-bottom:10px;
+  }
+  .features li .paw{
+    flex:0 0 auto;
+    width:24px; height:24px;
+    background:var(--grass);
+    border:2px solid var(--ink);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px;
+    color:white;
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+
+  .warning{
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink);
+    background:#fff6da;
+    border:2px dashed var(--roof);
+    padding:10px 12px;
+    border-radius:12px;
+  }
+  .warning strong{ color:var(--collar); }
+
+  /* Dog mascot */
+  .dog-box{
+    flex:0 0 auto;
+    width:180px;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    position:relative;
+    z-index:1;
+  }
+  .dog-box svg{ width:100%; height:auto; overflow:visible; }
+
+  /* ---------- Input panel ---------- */
+  .panel{
+    background:white;
+    border:3px solid var(--ink);
+    border-radius:22px;
+    box-shadow: var(--shadow);
+    padding:24px;
+    margin-bottom:22px;
+  }
+
+  .panel-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:'Fredoka', sans-serif;
+    font-weight:600;
+    font-size:18px;
+    color:var(--grass-dark);
+    margin:0 0 12px;
+  }
+
+  textarea{
+    width:100%;
+    height:180px;
+    padding:14px;
+    border:2.5px solid var(--ink);
+    border-radius:14px;
+    resize:vertical;
+    font-family:'Nunito', monospace, sans-serif;
+    font-size:14px;
+    background:var(--grass-light);
+    color:var(--ink);
+    outline:none;
+    transition:box-shadow .15s ease;
+  }
+  textarea:focus{ box-shadow: 0 0 0 3px rgba(63,157,92,0.35); }
+  textarea::placeholder{ color:#8a9b8e; }
+
+  .button-group{
+    display:flex;
+    gap:12px;
+    margin-top:14px;
+    flex-wrap:wrap;
+  }
+
+  button{
+    font-family:'Fredoka', sans-serif;
+    border:2.5px solid var(--ink);
+    cursor:pointer;
+    font-weight:600;
+    font-size:14px;
+    padding:12px 20px;
+    border-radius:12px;
+    box-shadow: 3px 3px 0 var(--ink);
+    transition: transform .1s ease, box-shadow .1s ease;
+  }
+  button:active{ transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+
+  .btn-open{ background:var(--grass); color:white; flex:2; min-width:180px; }
+  .btn-open:hover{ background:var(--grass-dark); }
+  .btn-clear{ background:white; color:var(--ink); flex:1; min-width:100px; }
+  .btn-clear:hover{ background:#f1f1ec; }
+
+  /* ---------- History panel ---------- */
+  .history-container{
+    background:white;
+    border:3px solid var(--ink);
+    border-radius:22px;
+    box-shadow: var(--shadow);
+    padding:22px 24px;
+    max-width:960px;
+    width:100%;
+  }
+
+  .history-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+    padding-bottom:10px;
+    border-bottom:2px dashed var(--grass-light);
+  }
+
+  .history-header h2{
+    margin:0;
+    font-family:'Fredoka', sans-serif;
+    font-weight:600;
+    font-size:18px;
+    color:var(--grass-dark);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .btn-clear-history{
+    background:white;
+    border:2px solid var(--collar);
+    color:var(--collar);
+    border-radius:10px;
+    padding:6px 12px;
+    font-size:12px;
+    box-shadow:2px 2px 0 var(--collar);
+  }
+  .btn-clear-history:hover{ background:var(--collar); color:white; }
+
+  .history-list{
+    list-style:none;
+    padding:0; margin:0;
+    max-height:320px;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .history-empty{
+    text-align:center;
+    color:var(--gray-dark);
+    font-weight:600;
+    padding:24px 10px;
+  }
+
+  .history-item{
+    background:var(--grass-light);
+    border:2px solid var(--ink);
+    border-radius:14px;
+    padding:12px 14px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .history-info{ font-size:14px; color:var(--ink); }
+  .history-time{ font-size:12px; color:var(--gray-dark); font-weight:700; display:block; margin-bottom:3px;}
+  .history-count{ font-weight:800; }
+
+  .btn-restore{
+    background:var(--roof);
+    color:var(--ink);
+    padding:7px 14px;
+    border-radius:10px;
+    font-size:12px;
+    text-transform:none;
+    box-shadow:2px 2px 0 var(--ink);
+    border:2px solid var(--ink);
+  }
+  .btn-restore:hover{ background:#ffbf2b; }
+
+  @media (max-width:560px){
+    h1{ font-size:26px; }
+    .dog-box{ width:130px; margin:0 auto; }
+    .hero{ flex-direction:column-reverse; }
+  }
+</style>
 </head>
 <body>
 
-<div class="container">
+<div class="wrap">
+
+  <div class="hero">
     <div class="info-section">
-        <h1><span class="icon-header">🔗</span>Trình mở nhiều URL</h1>
-        <p class="subtitle">Mở Nhiều Liên kết Cùng một lúc và Nâng cao Năng suất</p>
-        <ul class="features">
-            <li>Mở Nhiều Liên kết Cùng một lúc</li>
-            <li>Giới hạn tối đa 50 link/lần để an toàn</li>
-            <li>Tự động lưu lịch sử các link đã mở</li>
-        </ul>
-        <p class="warning">
-            <strong>Lưu ý:</strong> Giới hạn 50 link mỗi lần ấn. Hãy nhớ cho phép trình duyệt mở Pop-up.
-        </p>
+      <span class="badge">🐾 Bạn đồng hành tin cậy</span>
+      <h1>Trình Mở Nhiều URL</h1>
+      <p class="subtitle">Mở nhiều liên kết cùng lúc, nhanh gọn như một cú vẫy đuôi!</p>
+      <ul class="features">
+        <li><span class="paw">✓</span>Mở nhiều liên kết cùng một lúc</li>
+        <li><span class="paw">✓</span>Giới hạn tối đa 50 link/lần để an toàn</li>
+        <li><span class="paw">✓</span>Tự động lưu lịch sử các link đã mở</li>
+      </ul>
+      <p class="warning">
+        <strong>Lưu ý:</strong> Giới hạn 50 link mỗi lần ấn. Hãy nhớ cho phép trình duyệt mở Pop-up.
+      </p>
     </div>
 
-    <div class="input-section">
-        <textarea id="urlInput" placeholder="Dán các URL vào đây..."></textarea>
-        <div class="button-group">
-            <button class="btn-open" onclick="openUrls()">Mở Nhiều URL</button>
-            <button class="btn-clear" onclick="clearUrls()">XÓA ×</button>
-        </div>
+    <div class="dog-box">
+      <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+        <!-- doghouse -->
+        <polygon points="30,150 110,90 190,150" fill="var(--collar)" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
+        <rect x="40" y="150" width="140" height="55" fill="#fff" stroke="var(--ink)" stroke-width="4"/>
+        <path d="M85 205 V165 a25 25 0 0 1 50 0 V205" fill="var(--sky)" stroke="var(--ink)" stroke-width="4"/>
+        <!-- dog lying on roof -->
+        <ellipse cx="110" cy="112" rx="58" ry="20" fill="#ffffff" stroke="var(--ink)" stroke-width="4"/>
+        <circle cx="150" cy="98" r="22" fill="#ffffff" stroke="var(--ink)" stroke-width="4"/>
+        <path d="M132 88 q-16 -6 -18 10 q10 6 20 -2 Z" fill="var(--ink)"/>
+        <path d="M170 90 q16 -4 16 12 q-10 8 -18 -2 Z" fill="var(--ink)"/>
+        <circle cx="144" cy="96" r="2.6" fill="var(--ink)"/>
+        <circle cx="158" cy="94" r="2.6" fill="var(--ink)"/>
+        <ellipse cx="151" cy="104" rx="4" ry="3" fill="var(--ink)"/>
+        <path d="M147 107 q4 4 8 0" stroke="var(--ink)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- tail -->
+        <path d="M55 108 q-22 -10 -14 -30" stroke="var(--ink)" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <!-- collar -->
+        <rect x="128" y="112" width="30" height="7" rx="3.5" fill="var(--roof)" stroke="var(--ink)" stroke-width="2.5"/>
+      </svg>
     </div>
-</div>
+  </div>
 
-<div class="history-container">
+  <div class="panel">
+    <p class="panel-title">📋 Dán liên kết của bạn</p>
+    <textarea id="urlInput" placeholder="Dán các URL vào đây... (mỗi dòng hoặc cách nhau bằng dấu phẩy)"></textarea>
+    <div class="button-group">
+      <button class="btn-open" onclick="openUrls()">🚀 Mở nhiều URL</button>
+      <button class="btn-clear" onclick="clearUrls()">✕ Xóa</button>
+    </div>
+  </div>
+
+  <div class="history-container">
     <div class="history-header">
-        <h2>🕒 Lịch sử mở link</h2>
-        <button class="btn-clear-history" onclick="deleteAllHistory()">Xóa lịch sử</button>
+      <h2>🦴 Lịch sử mở link</h2>
+      <button class="btn-clear-history" onclick="deleteAllHistory()">Xóa lịch sử</button>
     </div>
     <ul id="historyList" class="history-list">
-        <li style="text-align: center; color: #999; padding: 10px;">Chưa có lịch sử nào.</li>
+      <li class="history-empty">Chưa có lịch sử nào.</li>
     </ul>
+  </div>
+
 </div>
 
 <script>
-    const MAX_LINKS = 50; // Cấu hình giới hạn link
+  const MAX_LINKS = 50; // Cấu hình giới hạn link
 
-    // Khi trang tải xong, hiển thị lịch sử từ LocalStorage
-    document.addEventListener('DOMContentLoaded', loadHistory);
+  // Lưu lịch sử trong bộ nhớ tạm của phiên làm việc (không dùng localStorage)
+  let historyStore = [];
 
-    function openUrls() {
-        const text = document.getElementById('urlInput').value;
-        let urls = text.split(/[\n, ]+/).map(u => u.trim()).filter(u => u !== "");
+  document.addEventListener('DOMContentLoaded', loadHistory);
 
-        if (urls.length === 0) {
-            alert("Vui lòng nhập ít nhất một đường dẫn!");
-            return;
-        }
+  function openUrls() {
+    const text = document.getElementById('urlInput').value;
+    let urls = text.split(/[\n, ]+/).map(u => u.trim()).filter(u => u !== "");
 
-        // --- XỬ LÝ GIỚI HẠN 50 LINK ---
-        let warningMsg = "";
-        if (urls.length > MAX_LINKS) {
-            warningMsg = `Bạn đã nhập ${urls.length} link. Hệ thống chỉ mở ${MAX_LINKS} link đầu tiên để đảm bảo an toàn.`;
-            urls = urls.slice(0, MAX_LINKS); // Cắt lấy 50 link đầu
-            alert(warningMsg);
-        }
-
-        // --- XỬ LÝ MỞ LINK ---
-        let openedCount = 0;
-        urls.forEach(url => {
-            if (!url.match(/^https?:\/\//i)) {
-                url = 'http://' + url;
-            }
-            window.open(url, '_blank');
-            openedCount++;
-        });
-
-        // --- LƯU VÀO LỊCH SỬ ---
-        if (openedCount > 0) {
-            saveToHistory(urls);
-        }
+    if (urls.length === 0) {
+      alert("Vui lòng nhập ít nhất một đường dẫn!");
+      return;
     }
 
-    function clearUrls() {
-        document.getElementById('urlInput').value = '';
-        document.getElementById('urlInput').focus();
+    // --- XỬ LÝ GIỚI HẠN 50 LINK ---
+    if (urls.length > MAX_LINKS) {
+      alert(`Bạn đã nhập ${urls.length} link. Hệ thống chỉ mở ${MAX_LINKS} link đầu tiên để đảm bảo an toàn.`);
+      urls = urls.slice(0, MAX_LINKS);
     }
 
-    // --- CÁC HÀM XỬ LÝ LỊCH SỬ (HISTORY) ---
+    // --- XỬ LÝ MỞ LINK ---
+    let openedCount = 0;
+    urls.forEach(url => {
+      if (!url.match(/^https?:\/\//i)) {
+        url = 'http://' + url;
+      }
+      window.open(url, '_blank');
+      openedCount++;
+    });
 
-    function saveToHistory(urlList) {
-        const historyItem = {
-            id: Date.now(),
-            time: new Date().toLocaleString('vi-VN'),
-            count: urlList.length,
-            urls: urlList.join('\n') // Lưu dưới dạng chuỗi để dễ restore
-        };
+    // --- LƯU VÀO LỊCH SỬ ---
+    if (openedCount > 0) {
+      saveToHistory(urls);
+    }
+  }
 
-        // Lấy lịch sử cũ
-        let history = JSON.parse(localStorage.getItem('urlOpenerHistory') || '[]');
-        
-        // Thêm cái mới vào đầu danh sách
-        history.unshift(historyItem);
+  function clearUrls() {
+    document.getElementById('urlInput').value = '';
+    document.getElementById('urlInput').focus();
+  }
 
-        // Giới hạn chỉ lưu 20 lần gần nhất để nhẹ bộ nhớ
-        if (history.length > 20) history.pop();
+  // --- CÁC HÀM XỬ LÝ LỊCH SỬ (HISTORY) ---
 
-        // Lưu lại vào LocalStorage
-        localStorage.setItem('urlOpenerHistory', JSON.stringify(history));
-        
-        // Vẽ lại giao diện
-        loadHistory();
+  function saveToHistory(urlList) {
+    const historyItem = {
+      id: Date.now(),
+      time: new Date().toLocaleString('vi-VN'),
+      count: urlList.length,
+      urls: urlList.join('\n')
+    };
+
+    historyStore.unshift(historyItem);
+    if (historyStore.length > 20) historyStore.pop();
+
+    loadHistory();
+  }
+
+  function loadHistory() {
+    const historyListEl = document.getElementById('historyList');
+
+    if (historyStore.length === 0) {
+      historyListEl.innerHTML = '<li class="history-empty">Chưa có lịch sử nào.</li>';
+      return;
     }
 
-    function loadHistory() {
-        const historyListEl = document.getElementById('historyList');
-        const history = JSON.parse(localStorage.getItem('urlOpenerHistory') || '[]');
+    historyListEl.innerHTML = '';
+    historyStore.forEach(item => {
+      const li = document.createElement('li');
+      li.className = 'history-item';
+      li.innerHTML = `
+        <div class="history-info">
+          <span class="history-time">${item.time}</span>
+          <span class="history-count">🐾 Đã mở ${item.count} liên kết</span>
+        </div>
+        <button class="btn-restore" onclick="restoreHistory(${item.id})">Dùng lại ↲</button>
+      `;
+      historyListEl.appendChild(li);
+    });
+  }
 
-        if (history.length === 0) {
-            historyListEl.innerHTML = '<li style="text-align: center; color: #999; padding: 10px;">Chưa có lịch sử nào.</li>';
-            return;
-        }
-
-        historyListEl.innerHTML = '';
-        history.forEach(item => {
-            const li = document.createElement('li');
-            li.className = 'history-item';
-            li.innerHTML = `
-                <div class="history-info">
-                    <span class="history-time">${item.time}</span>
-                    <strong>Đã mở ${item.count} liên kết</strong>
-                </div>
-                <button class="btn-restore" onclick="restoreHistory(${item.id})">Dùng lại ↲</button>
-            `;
-            historyListEl.appendChild(li);
-        });
+  function restoreHistory(id) {
+    const item = historyStore.find(h => h.id === id);
+    if (item) {
+      document.getElementById('urlInput').value = item.urls;
+      document.querySelector('.panel').scrollIntoView({behavior: 'smooth'});
     }
+  }
 
-    function restoreHistory(id) {
-        const history = JSON.parse(localStorage.getItem('urlOpenerHistory') || '[]');
-        const item = history.find(h => h.id === id);
-        if (item) {
-            document.getElementById('urlInput').value = item.urls;
-            // Scroll lên ô nhập liệu
-            document.querySelector('.container').scrollIntoView({behavior: 'smooth'});
-        }
+  function deleteAllHistory() {
+    if (confirm('Bạn có chắc muốn xóa toàn bộ lịch sử không?')) {
+      historyStore = [];
+      loadHistory();
     }
-
-    function deleteAllHistory() {
-        if(confirm('Bạn có chắc muốn xóa toàn bộ lịch sử không?')) {
-            localStorage.removeItem('urlOpenerHistory');
-            loadHistory();
-        }
-    }
+  }
 </script>
 
 </body>
